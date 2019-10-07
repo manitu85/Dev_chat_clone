@@ -6,6 +6,7 @@ import Login from './Components/Auth/Login';
 import Register from './Components/Auth/Register';
 
 import 'semantic-ui-css/semantic.min.css'
+import './styles/app.scss'
 
 const Root = () => (
   <Router>
