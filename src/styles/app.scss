@@ -1,3 +1,8 @@
+@font-face {
+  font-family: cornera;
+  src: url(../assets/font//Cornera-Regular.woff);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -11,6 +16,7 @@
 
 html {
     box-sizing: border-box; 
+    // font-family: cornera;
     // font-size: 62.5%;  /*10px/16px * 100 = 62.5*/
 }
 
@@ -18,7 +24,9 @@ html,
 body,
 .app {
   height: 100vh;
-  background: #eee;
+  background: #202020;
+// background: linear-gradient( #101010, #202020, #101010); 
+
   padding: 1em;
 }
 
@@ -197,4 +205,41 @@ body,
   bottom: 5px;
   left: 40px;
   right: 20px;
+}
+
+
+// #####################################################
+
+.register__icons {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;  
+
+  margin-top: 1rem;
+}
+
+
+.font__cornera {
+  font-family: cornera;
+
+  &--small {
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 1px;
+  }
+
+  &--medium {
+    font-size: 1.75rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+
+  &--big {
+    font-size: 2.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
 }

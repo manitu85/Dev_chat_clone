@@ -32,16 +32,16 @@ class Register extends Component {
     let errors = []
     let error
 
-    if(this.isFormEmpty(this.state)) {
+    if (this.isFormEmpty(this.state)) {
       //throw error
       error = { message: 'Fill in all fields' }
       this.setState({ errors: [...errors, error] })
       return false
       // errors: [...errors, error]
-    } else if(!this.isPasswordValid(this.state)) {
+    } else if (!this.isPasswordValid(this.state)) {
       //throw error
-      error = { message: 'Password is invalid'}
-      this.setState({ errors: [...errors, error]})
+      error = { message: 'Password is invalid' }
+      this.setState({ errors: [...errors, error] })
     } else {
       // form valid
       return true
@@ -50,9 +50,9 @@ class Register extends Component {
 
 
   isPasswordValid = ({ password, passwordConfirmation }) => {
-    if (password.length < 6 || passwordConfirmation.length < 6 ) {
+    if (password.length < 6 || passwordConfirmation.length < 6) {
       return false
-    } else if (password !== passwordConfirmation ) {
+    } else if (password !== passwordConfirmation) {
       return false
     } else {
       return true
@@ -61,12 +61,12 @@ class Register extends Component {
 
   showError = errors => errors.map((error, i) => <p key={i}>{error.message}</p>)
 
-  handleOnchange = e => this.setState({ [ e.target.name ] : e.target.value })
+  handleOnchange = e => this.setState({ [e.target.name]: e.target.value })
 
   handleSubmit = e => {
     e.preventDefault()
 
-    if(this.isFormValid()) {
+    if (this.isFormValid()) {
       const { username, email, password, errors } = this.state
 
       this.setState({ errors: [], loading: true })
@@ -79,31 +79,31 @@ class Register extends Component {
             displayName: username,
             photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
           })
-          .then(() => {
-            this.saveUser(createdUser)
-              .then(() => {
-                console.log('User saved');
-              })
-          })
-          .then(() => {
-            this.setState({ loading: false})
-          })
-          .catch(err => {
-            console.error(err)
-            this.setState({ errors: [...errors, err], loading: false })
-          })
+            .then(() => {
+              this.saveUser(createdUser)
+                .then(() => {
+                  console.log('User saved');
+                })
+            })
+            .then(() => {
+              this.setState({ loading: false })
+            })
+            .catch(err => {
+              console.error(err)
+              this.setState({ errors: [...errors, err], loading: false })
+            })
         })
         .catch(err => {
           console.error(err)
           this.setState({ errors: [...errors, err], loading: false })
         })
 
-        this.setState({
-          username: '',
-          email: '',
-          password: '',
-          passwordConfirmation: ''
-        })
+      // this.setState({
+      //   username: '',
+      //   email: '',
+      //   password: '',
+      //   passwordConfirmation: ''
+      // })
     }
   }
 
@@ -123,11 +123,11 @@ class Register extends Component {
 
   render() {
     const { username, email, password, passwordConfirmation, errors, loading } = this.state
-    
+
     return (
       <Grid textAlign='center' verticalAlign='middle' className='app' >
-        <Grid.Column style={{maxWidth: 450}}>
-          <Header as='h1' icon color='orange' textAlign='center' inverted>
+        <Grid.Column style={{ maxWidth: 450 }}>
+          <Header as='h1' icon color='orange' textAlign='center' inverted >
             <Icon name='chess' color='orange' />
             <span className='font__cornera font__cornera--big'>Register for DevChat</span>
             <Header.Subheader>
@@ -136,12 +136,12 @@ class Register extends Component {
           </Header>
           <Form size='large' onSubmit={this.handleSubmit}>
             <Segment stacked>
-              <Form.Input 
-                fluid 
-                name='username' 
-                icon='user' 
-                iconPosition='left' 
-                placeholder='Username'  
+              <Form.Input
+                fluid
+                name='username'
+                icon='user'
+                iconPosition='left'
+                placeholder='Username'
                 type='text'
                 className={this.handleInputError(errors, 'username')}
                 value={username}
@@ -181,15 +181,15 @@ class Register extends Component {
                 onChange={this.handleOnchange}
               />
 
-              <Button 
+              <Button
                 animated='vertical'
-                fluid 
+                fluid
                 className={loading ? 'loading' : ''}
                 disabled={loading}
-                color='orange' 
+                color='orange'
                 size='large'
               >
-                <Button.Content visible>Submit</Button.Content> 
+                <Button.Content visible>Submit</Button.Content>
                 <Button.Content hidden>DevChat <Icon name="sign-in alternate"></Icon></Button.Content>
               </Button>
             </Segment>
@@ -204,15 +204,15 @@ class Register extends Component {
           }
           <Message>Already a user? {' '}  <Link to='/login' >Login</Link></Message>
           <div className='register__icons'>
-            <Icon name='angular' color='red' size='big'/>
-            <Icon name='react' color='blue' size='big'/>
-            <Icon name='python' color='yellow' size='big'/>
-            <Icon name='node' color='green' size='big'/>
-            <Icon name='php' color='violet' size='big'/>
-            <Icon name='aws' color='orange' size='big'/>
-            <Icon name='wordpress' color='grey' size='big'/>
-            <Icon name='sass' color='pink' size='big'/>
-            <Icon name='code' color='olive' size='big'/>
+            <Icon name='angular' color='red' size='big' />
+            <Icon name='react' color='blue' size='big' />
+            <Icon name='python' color='yellow' size='big' />
+            <Icon name='node' color='green' size='big' />
+            <Icon name='php' color='violet' size='big' />
+            <Icon name='aws' color='orange' size='big' />
+            <Icon name='wordpress' color='grey' size='big' />
+            <Icon name='sass' color='pink' size='big' />
+            <Icon name='code' color='olive' size='big' />
           </div>
         </Grid.Column>
       </Grid>
