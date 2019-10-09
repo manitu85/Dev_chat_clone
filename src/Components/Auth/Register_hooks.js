@@ -5,7 +5,6 @@ import md5 from 'md5'
 import { Grid, Form, Segment, Button, Header, Message, Icon } from 'semantic-ui-react'
 
 
-
 const Register = () => {
 
   const [state, setState] = useState({

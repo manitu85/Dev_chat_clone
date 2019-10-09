@@ -72,7 +72,7 @@ class Register extends Component {
       this.setState({ errors: [], loading: true })
       firebase
         .auth()
-        .createUserWithEmailAndPassword(email, password)
+        .createUserWithEmailAndPassword(email, password)  // Firebse method 
         .then(createdUser => {
           console.log(createdUser);
           createdUser.user.updateProfile({
