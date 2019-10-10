@@ -34,8 +34,8 @@ body,
 
 /* Messages.js */
 .messages {
-  height: 62vh;
   overflow-y: scroll;
+  height: calc(100vh - 200px)  
 }
 
 /* MessageForm.js */
