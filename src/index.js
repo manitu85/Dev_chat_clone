@@ -22,7 +22,7 @@ const store = createStore(rootReducer, composeWithDevTools())
 const Root = (props) => {
 
   useEffect(() => {
-    console.log(props.isLoading);
+    // console.log(props.isLoading);
     firebase.auth().onAuthStateChanged(user => { // Firebse method 
       if(user) {
         props.setUser(user)
