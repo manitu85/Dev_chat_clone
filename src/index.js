@@ -10,7 +10,7 @@ import App from './App';
 import Login from './Components/Auth/Login';
 import Register from './Components/Auth/Register'
 import Spinner from './Components/layout/Spinner'
-import { setUser } from './actions/index';
+import { setUser, clearUser } from './actions/index';
 import rootReducer from './reducers';
 
 import 'semantic-ui-css/semantic.min.css'
@@ -27,6 +27,9 @@ const Root = (props) => {
       if(user) {
         props.setUser(user)
         props.history.push('/')
+      } else {
+        props.history.push('/login')
+        props.clearUser()
       }
     })
   // eslint-disable-next-line
@@ -46,7 +49,7 @@ const mapStateToProps = state => ({
 })
 
 
-const RootWithAuth = withRouter(connect(mapStateToProps, { setUser })(Root))
+const RootWithAuth = withRouter(connect(mapStateToProps, { setUser, clearUser })(Root))
 
 render(
   <Provider store={store}>
