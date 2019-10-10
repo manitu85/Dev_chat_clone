@@ -13,13 +13,19 @@ export class Channels extends Component {
     modal: false
   }
 
-  handleSubmit = e => {
-    e.preventDefault()
-    
-    if(this.isFormIsValid(this.state)) {
-      this.addChannel()
-    }
+  componentDidMount() {
+    this.addListeners()
   }
+  
+
+  addListeners = () => {
+    let loadedChannels = []
+    this.state.channelsRef.on('child_added', snap => {
+      loadedChannels.push(snap.val())
+      this.setState({ channels: loadedChannels })
+    })
+  }
+  
 
   addChannel = () => {
     const { channelsRef, channelName, channelDetails, user } = this.state
@@ -49,6 +55,25 @@ export class Channels extends Component {
       })
   }
   
+  handleSubmit = e => {
+    e.preventDefault()
+    if (this.isFormIsValid(this.state)) {
+      this.addChannel()
+    }
+  }
+
+  displayChannels = channels => (
+    channels.length > 0 && channels.map(channel => (
+      <Menu.Item
+        key={channel.id}
+        onClick={() => console.log(channel)}
+        name={channel.name}
+        style={{ opacity: .7}}
+      >
+        # { channel.name }
+      </Menu.Item>
+    ))
+  )
 
   isFormIsValid = ({channelName, channelDetails}) => channelName && channelDetails 
   
@@ -57,6 +82,7 @@ export class Channels extends Component {
   closeModal = () => this.setState({ modal: false })
 
   handleChange = e => this.setState({ [e.target.name] : e.target.value })
+
   
   render() {
     const { channels, modal } = this.state
@@ -70,7 +96,7 @@ export class Channels extends Component {
             </span>{' '}
             ({ channels.length }) <Icon name='add' onClick={this.openModal} />
           </Menu.Item>
-          {/* Channels */}
+          {this.displayChannels(channels)}
         </Menu.Menu>
 
         {/* // Add channel modal */}
