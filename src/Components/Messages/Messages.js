@@ -13,7 +13,11 @@ export class Messages extends Component {
     messages: [],
     messagesLoading: true,
     channel: this.props.currentChannel,
-    user: this.props.currentUser
+    user: this.props.currentUser,
+    numUniqueUser: '',
+    searchTerm: '',
+    SearchResults: [],
+    searchLoading: false
   }
 
   componentDidMount() {
@@ -35,9 +39,10 @@ export class Messages extends Component {
       this.setState({
         messages: loadedMessages,
         messagesLoading: false
-      });
-    });
-  };
+      })
+      this.countUniqueUsers(loadedMessages)
+    })
+  }
 
   displayMessages = messages =>
     messages.length > 0 &&
@@ -49,14 +54,62 @@ export class Messages extends Component {
         />
     ));
 
+  displayChannelName = channel => channel ? `#${channel.name}` : ''
+
+  countUniqueUsers = messages => {
+    const uniqueUser = messages.reduce((acc, message) => {
+      if(!acc.includes(message.user.name)) {
+        acc.push(message.user.name)
+      }
+      return acc
+    }, [])
+    const plural = uniqueUser.length > 1 || uniqueUser.length === 0
+    const numUniqueUser = `${uniqueUser.length} user${plural ? 's' : ''}`
+    this.setState({ numUniqueUser })
+  }
+  
+  handleSearchChange = e => {
+    this.setState({
+      searchTerm: e.target.value,
+      searchLoading: true
+    }, () => this.handleSearchMessages()
+    )
+  }
+
+  handleSearchMessages = () => {
+    const channelMessages = [...this.state.messages];
+    const regex = new RegExp(this.state.searchTerm, "gi");
+    const searchResults = channelMessages.reduce((acc, message) => {
+      if (
+        (message.content && message.content.match(regex)) ||
+        message.user.name.match(regex)
+      ) {
+        acc.push(message);
+      }
+      return acc;
+    }, []);
+    this.setState({ searchResults });
+    setTimeout(() => this.setState({ searchLoading: false }), 1000)
+  }
+
   render() {
-    const { messagesRef, messages, channel, user } = this.state
+    // prettier ignore
+    const { messagesRef, messages, channel, user, countUniqueUsers, searchTerm, SearchResults, searchLoading } = this.state
     return (
       <>
-        <MessageHeader />
+        <MessageHeader 
+          channelName={this.displayChannelName(channel)}
+          numUniqueUser={countUniqueUsers}
+          handleSearchChange={this.handleSearchChange}
+          searchLoading={searchLoading}
+        />
         <Segment>
           <Comment.Group className='messages'>
-            {this.displayMessages(messages)}
+            {
+              searchTerm 
+                ? this.displayMessages(SearchResults)
+                : this.displayMessages(messages)
+            }
           </Comment.Group>
         </Segment>
         <MessageForm 

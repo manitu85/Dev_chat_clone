@@ -166,6 +166,7 @@ export class MessageForm extends Component {
           />
           <Button 
             onClick={this.openModal}
+            disabled={uploadState === 'uploading'}
             color='teal'
             content='Upload Media'
             labelPosition='right'
@@ -176,11 +177,11 @@ export class MessageForm extends Component {
             closeModal={this.closeModal}
             uploadFile={this.uploadFile}
            />
+        </Button.Group>
           <ProggresBar 
             uploadState={uploadState}
             percentUploaded={percentUploaded}
           />
-        </Button.Group>
       </Segment>
     )
   }
