@@ -6,7 +6,7 @@ import MessageHeader from './MessageHeader'
 import MessageForm from './MessageForm'
 import Message from "./Message";
 
-export class Messages extends Component {
+class Messages extends Component {
 
   state = {
     messagesRef: firebase.database().ref('messages'),
@@ -14,9 +14,9 @@ export class Messages extends Component {
     messagesLoading: true,
     channel: this.props.currentChannel,
     user: this.props.currentUser,
-    numUniqueUser: '',
+    numUniqueUsers: '',
     searchTerm: '',
-    SearchResults: [],
+    searchResults: [],
     searchLoading: false
   }
 
@@ -72,7 +72,8 @@ export class Messages extends Component {
     this.setState({
       searchTerm: e.target.value,
       searchLoading: true
-    }, () => this.handleSearchMessages()
+    }, 
+      () => this.handleSearchMessages()  // cb after handleSearchChange upadated, filter msg
     )
   }
 
@@ -94,7 +95,7 @@ export class Messages extends Component {
 
   render() {
     // prettier ignore
-    const { messagesRef, messages, channel, user, countUniqueUsers, searchTerm, SearchResults, searchLoading } = this.state
+    const { messagesRef, messages, channel, user, countUniqueUsers, searchTerm, searchResults, searchLoading } = this.state
     return (
       <>
         <MessageHeader 
@@ -107,7 +108,7 @@ export class Messages extends Component {
           <Comment.Group className='messages'>
             {
               searchTerm 
-                ? this.displayMessages(SearchResults)
+                ? this.displayMessages(searchResults)
                 : this.displayMessages(messages)
             }
           </Comment.Group>
