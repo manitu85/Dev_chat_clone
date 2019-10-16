@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import firebase from '../../firebase'
-import uuidv4 from 'uuid/v4';
+import uuidv4 from 'uuid/v4'
 import { Segment, Input, Button } from 'semantic-ui-react'
 
-import FileModal from './FileModal';
-import ProggresBar from './ProggresBar';
+import FileModal from './FileModal'
+import ProggresBar from './ProggresBar'
 
 export class MessageForm extends Component {
 
@@ -39,21 +39,20 @@ export class MessageForm extends Component {
       }
     };
     if (fileUrl !== null) {
-      message["image"] = fileUrl;
+      message['image'] = fileUrl;
     } else {
-      message["content"] = this.state.message;
+      message['content'] = this.state.message;
     }
     return message;
   }
 
   sendMessage = () => {
-    const { messagesRef } = this.props
+    const { getMessagesRef } = this.props
     const { message, channel } = this.state
 
     if (message) {
       this.setState({ loading: true })
-      //send message
-      messagesRef
+      getMessagesRef()
         .child(channel.id)
         .push()
         .set(this.createMessage())
@@ -79,10 +78,18 @@ export class MessageForm extends Component {
     }
   }
 
+  getPath = () => {
+    if (this.props.isPrivateChannel) {
+      return `chat/private-${this.state.channel.id}`
+    } else {
+      return 'chat/public'
+    }
+  };
+
   uploadFile = (file, metadata) => {
     const pathToUpload = this.state.channel.id
-    const ref = this.props.messagesRef
-    const filePath = `chat/public/${uuidv4().jpg}`
+    const ref = this.props.getMessagesRef()
+    const filePath = `${this.getPath()}/${uuidv4()}.jpg`;
 
     this.setState({
       uploadState: 'uploading',
@@ -111,7 +118,7 @@ export class MessageForm extends Component {
                console.error(err);
                this.setState({
                  errors: this.state.errors.concat(err),
-                 uploadState: "error",
+                 uploadState: 'error',
                  uploadTask: null
                });
              });
@@ -126,7 +133,7 @@ export class MessageForm extends Component {
       .push()
       .set(this.createMessage(fileUrl))
       .then(() => {
-        this.setState({ uploadState: "done" });
+        this.setState({ uploadState: 'done' });
       })
       .catch(err => {
         console.error(err);
