@@ -1,7 +1,8 @@
 import { 
   SET_USER, 
   CLEAR_USER, 
-  SET_CURRENT_CHANNEL 
+  SET_CURRENT_CHANNEL,
+  SET_PRIVATE_CHANNEL 
 } from './types'
 
 
@@ -25,6 +26,15 @@ export const setCurrentChannel = channel => ({
     currentChannel: channel
   }
 })
+
+export const setPrivateChannel = isPrivateChannel => {
+  return {
+    type: SET_PRIVATE_CHANNEL,
+    payload: {
+      isPrivateChannel
+    }
+  };
+};
 
 
 
