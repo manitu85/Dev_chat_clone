@@ -7,11 +7,11 @@ import SidePanel from './Components/SidePanel/SidePanel'
 import Messages from './Components/Messages/Messages'
 import MetaPanel from './Components/MetaPanel/MetaPanel';
 
-
-const App = ({ currentUser, currentChannel, isPrivateChannel, userPosts}) => {
+// prettier-ignore
+const App = ({ currentUser, currentChannel, isPrivateChannel, userPosts, primaryColor, secondaryColor}) => {
   // console.log(currentChannel);
   return (
-    <Grid columns='equal' className='app' style={{ background: '#eee'}} >
+    <Grid columns='equal' className='app' style={{ background: secondaryColor}} >
       <ColorPanel 
         key={currentUser && currentUser.name}
         currentUser={currentUser}
@@ -19,6 +19,7 @@ const App = ({ currentUser, currentChannel, isPrivateChannel, userPosts}) => {
       <SidePanel 
         key={currentUser && currentUser.uid}
         currentUser={currentUser} 
+        primaryColor={primaryColor}
       />
       <Grid.Column style={{marginLeft: 320}}>
         <Messages 
@@ -40,11 +41,13 @@ const App = ({ currentUser, currentChannel, isPrivateChannel, userPosts}) => {
   );
 }
 
-const mapStateToProps = ({ user, channel }) => ({
+const mapStateToProps = ({ user, channel, colors }) => ({
   currentUser: user.currentUser, 
   currentChannel: channel.currentChannel,
   isPrivateChannel: channel.isPrivateChannel, 
-  userPosts: channel.userPosts
+  userPosts: channel.userPosts,
+  primaryColor: colors.primaryColor,
+  secondaryColor: colors.secondaryColor
 })
 
 

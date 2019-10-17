@@ -4,7 +4,8 @@ import {
   CLEAR_USER,
   SET_CURRENT_CHANNEL,
   SET_PRIVATE_CHANNEL,
-  SET_USER_POSTS
+  SET_USER_POSTS,
+  SET_COLORS
 } from "../actions/types";
 
 const initalUserState = {
@@ -64,10 +65,30 @@ const channel_reducer = (state = initialChannelState, { type, payload }) => {
   }
 };
 
+// ##### Colors reducer #####
+const initialColorsState = {
+  primaryColor: "#6d1aa5",
+  secondaryColor: "#eee"
+};
+
+const colors_reducer = (state = initialColorsState, { type, payload }) => {
+  switch (type) {
+    case SET_COLORS:
+      return {
+        primaryColor: payload.primaryColor,
+        secondaryColor: payload.secondaryColor
+      }
+
+    default:
+      return state
+  }
+}
+
 // #####  Combine all reducers ######
 const rootReducer = combineReducers({
   user: user_reducer,
-  channel: channel_reducer
-});
+  channel: channel_reducer,
+  colors: colors_reducer
+})
 
 export default rootReducer
