@@ -18,8 +18,8 @@ export class SidePanel extends Component {
       >
         <UserPanel currentUser={currentUser} primaryColor={primaryColor} />
         <Channels currentUser={currentUser}  />
-        <DirectMessages currentUser={currentUser}  />
         <Starred currentUser={currentUser}  />
+        <DirectMessages currentUser={currentUser}  />
       </Menu>
     )
   }

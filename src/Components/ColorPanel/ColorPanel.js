@@ -33,6 +33,15 @@ const ColorPanel = ({ currentUser, setColors }) => {
   const [userColors, setUserColors] = useState([])
   
   // ##Methods
+
+  const addListener = userId => {
+    let userColors = [];
+    usersRef.child(`${userId}/colors`).on("child_added", snap => {
+      userColors.unshift(snap.val());
+      setUserColors(userColors)
+    })
+  }
+
   const openModal = () => setModal(true)
   const closeModal = () => setModal(false)
 
@@ -43,14 +52,6 @@ const ColorPanel = ({ currentUser, setColors }) => {
     if (primary && secondary) {
       saveColors(primary, secondary)
     }
-  }
-
-  const addListener = userId => {
-    let userColors = [];
-    usersRef.child(`${userId}/colors`).on("child_added", snap => {
-      userColors.unshift(snap.val());
-      setUserColors(userColors)
-    })
   }
 
   const saveColors = (primary, secondary) => {
