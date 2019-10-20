@@ -16,13 +16,22 @@ import {
 
 const ColorPanel = ({ currentUser, setColors }) => {
 
-  // component did mount
+  // As componentDidMount
   useEffect(() => {
     if (user) {
       addListener(user.uid);
     }
   // eslint-disable-next-line
   }, [])
+
+  // As componentWillUnmount
+  useEffect(() => {
+    return () => {
+      removeListener()
+    }
+  // eslint-disable-next-line
+  }, [])
+
 
   // ##States
   const [modal, setModal] = useState(false)
@@ -40,6 +49,10 @@ const ColorPanel = ({ currentUser, setColors }) => {
       userColors.unshift(snap.val());
       setUserColors(userColors)
     })
+  }
+
+  const removeListener = () => {
+    usersRef.child(`${user.uid}/colors`).off()
   }
 
   const openModal = () => setModal(true)

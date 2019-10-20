@@ -101,7 +101,7 @@ body,
   position: relative;
   padding: 10px;
   margin-left: 5px;
-  background: #e6e6e6;
+  // background: #e6e6e6;
   border-radius: 20px;
 }
 
@@ -212,8 +212,8 @@ body,
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
+  
   align-items: center;  
-
   margin-top: 1rem;
 }
 

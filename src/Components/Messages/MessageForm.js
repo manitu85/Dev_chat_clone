@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import firebase from '../../firebase'
-import uuidv4 from 'uuid/v4'
 import { Segment, Input, Button } from 'semantic-ui-react'
+import uuidv4 from 'uuid/v4'
+import { Picker, emojiIndex } from 'emoji-mart'
+import 'emoji-mart/css/emoji-mart.css'
 
 import FileModal from './FileModal'
 import ProggresBar from './ProggresBar'
@@ -10,15 +12,17 @@ export class MessageForm extends Component {
 
   state = {
     storageRef: firebase.storage().ref(),
+    typingRef: firebase.database().ref("typing"),
     uploadTask: null,
-    uploadState: '',
+    uploadState: "",
     percentUploaded: 0,
-    message: '',
-    errors: [],
+    message: "",
     channel: this.props.currentChannel,
     user: this.props.currentUser,
-    loadign: false,
-    modal: false
+    loading: false,
+    errors: [],
+    modal: false,
+    emojiPicker: false
   }
 
   openModal = ()=> this.setState({ modal: true})
@@ -29,6 +33,28 @@ export class MessageForm extends Component {
     this.setState({ [name] : value })
   }
 
+  handleKeyDown = e => {
+    const { message, typingRef, channel, user } = this.state
+
+    e = e || window.event
+    const enterKey = e.key === 'Enter' || e.keyCode === 13
+    if (enterKey) {
+      this.sendMessage()
+    }
+
+    if (message) {
+      typingRef
+        .child(channel.id)
+        .child(user.uid)
+        .set(user.displayName)
+    } else {
+      typingRef
+        .child(channel.id)
+        .child(user.uid)
+        .remove()
+    }
+  }
+
   createMessage = (fileUrl = null) => {
     const message = {
       timestamp: firebase.database.ServerValue.TIMESTAMP,
@@ -37,18 +63,18 @@ export class MessageForm extends Component {
         name: this.state.user.displayName,
         avatar: this.state.user.photoURL
       }
-    };
-    if (fileUrl !== null) {
-      message['image'] = fileUrl;
-    } else {
-      message['content'] = this.state.message;
     }
-    return message;
+    if (fileUrl !== null) {
+      message['image'] = fileUrl
+    } else {
+      message['content'] = this.state.message
+    }
+    return message
   }
 
   sendMessage = () => {
     const { getMessagesRef } = this.props
-    const { message, channel } = this.state
+    const { message, channel, user, typingRef } = this.state
 
     if (message) {
       this.setState({ loading: true })
@@ -62,6 +88,10 @@ export class MessageForm extends Component {
             message: '',
             errors: []
           })
+          typingRef
+            .child(channel.id)
+            .child(user.uid)
+            .remove()
         })
         .catch( err => {
           console.error(err)
@@ -84,12 +114,12 @@ export class MessageForm extends Component {
     } else {
       return 'chat/public'
     }
-  };
+  }
 
   uploadFile = (file, metadata) => {
     const pathToUpload = this.state.channel.id
     const ref = this.props.getMessagesRef()
-    const filePath = `${this.getPath()}/${uuidv4()}.jpg`;
+    const filePath = `${this.getPath()}/${uuidv4()}.jpg`
 
     this.setState({
       uploadState: 'uploading',
@@ -112,16 +142,16 @@ export class MessageForm extends Component {
            this.state.uploadTask.snapshot.ref
              .getDownloadURL()
              .then(downloadUrl => {
-               this.sendFileMessage(downloadUrl, ref, pathToUpload);
+               this.sendFileMessage(downloadUrl, ref, pathToUpload)
              })
              .catch(err => {
-               console.error(err);
+               console.error(err)
                this.setState({
                  errors: this.state.errors.concat(err),
                  uploadState: 'error',
                  uploadTask: null
-               });
-             });
+               })
+             })
          }
        ) 
       }
@@ -133,33 +163,76 @@ export class MessageForm extends Component {
       .push()
       .set(this.createMessage(fileUrl))
       .then(() => {
-        this.setState({ uploadState: 'done' });
+        this.setState({ uploadState: 'done' })
       })
       .catch(err => {
-        console.error(err);
+        console.error(err)
         this.setState({
           errors: this.state.errors.concat(err)
-        });
-      });
-  };
+        })
+      })
+  }
+
+  handleTogglePicker = () => {
+    this.setState({ emojiPicker: !this.state.emojiPicker })
+  }
+
+  handleAddEmoji = emoji => {
+    const oldMessage = this.state.message
+    const newMessage = this.colonToUnicode(` ${oldMessage} ${emoji.colons} `)
+    this.setState({ message: newMessage, emojiPicker: false })
+    setTimeout(() => this.messageInputRef.focus(), 0)
+  }
+
+  colonToUnicode = message => {
+    return message.replace(/:[A-Za-z0-9_+-]+:/g, x => {
+      x = x.replace(/:/g, '')
+      let emoji = emojiIndex.emojis[x]
+      if (typeof emoji !== 'undefined') {
+        let unicode = emoji.native
+        if (typeof unicode !== 'undefined') {
+          return unicode
+        }
+      }
+      x = ':' + x + ':'
+      return x
+    })
+  }
   
   render() {
     // prettier ignore
-    const { errors, message, loading, modal, uploadState, percentUploaded } = this.state
+    const { errors, message, loading, modal, uploadState, percentUploaded, emojiPicker } = this.state
    
     return (
       <Segment className='message__form'>
+        {emojiPicker && (
+          <Picker
+            set='apple'
+            onSelect={this.handleAddEmoji}
+            className='emojipicker'
+            title='Pick your emoji'
+            emoji='point_up'
+          />
+        )}
         <Input
           fluid
           name='message'
           style={{ marginBottom: '.7em'}}
-          label={<Button icon={'add'} />}
           labelPosition='left'
           placeholder='Write your message'
+          ref={node => (this.messageInputRef = node)}
           value={message}
           onChange={this.handleOnChange}
+          onKeyDown={this.handleKeyDown}
           className={
             errors.some(err => err.message.includes('message')) ? 'error' : ''
+          }
+          label={
+            <Button
+              icon={emojiPicker ? "close" : "add"}
+              content={emojiPicker ? "Close" : null}
+              onClick={this.handleTogglePicker}
+            />
           }
         />
         <Button.Group icon widths='2'>

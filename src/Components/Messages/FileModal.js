@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import mime from 'mime-types'
 import { Modal, Input, Button, Icon } from 'semantic-ui-react'
 
-export class FileModal extends Component {
+class FileModal extends Component {
 
   state = {
     file: null,
