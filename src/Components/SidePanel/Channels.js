@@ -39,6 +39,13 @@ export class Channels extends Component {
     })
   }
 
+  removeListeners = () => {
+    this.state.channelsRef.off();
+    this.state.channels.forEach(channel => {
+      this.state.messagesRef.child(channel.id).off();
+    });
+  };
+
 
   addNotificationListener = channelId => {
     this.state.messagesRef.child(channelId).on("value", snap => {

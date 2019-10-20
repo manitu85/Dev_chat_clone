@@ -14,6 +14,11 @@ class Login extends Component {
     userRef: firebase.database().ref('users')
   }
 
+//   const [inputValues, setInputValues] = useState({
+//     username: '',
+//     password: ''
+// })
+
 
   showError = errors => errors.map((error, i) => <p key={i}>{error.message}</p>)
 

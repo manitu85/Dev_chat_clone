@@ -1,14 +1,14 @@
-import React from "react"
-import { connect } from "react-redux"
-import firebase from "../../firebase"
-import { setCurrentChannel, setPrivateChannel } from "../../actions"
-import { Menu, Icon } from "semantic-ui-react"
+import React from 'react'
+import { connect } from 'react-redux'
+import firebase from '../../firebase'
+import { setCurrentChannel, setPrivateChannel } from '../../actions'
+import { Menu, Icon } from 'semantic-ui-react'
 
 class Starred extends React.Component {
   state = {
     user: this.props.currentUser,
-    usersRef: firebase.database().ref("users"),
-    activeChannel: "",
+    usersRef: firebase.database().ref('users'),
+    activeChannel: '',
     starredChannels: []
   }
 
@@ -18,11 +18,19 @@ class Starred extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    this.removeListener()
+  }
+
+  removeListener = () => {
+    this.state.usersRef.child(`${this.state.user.uid}/starred`).off()
+  }
+
   addListeners = userId => {
     this.state.usersRef
       .child(userId)
-      .child("starred")
-      .on("child_added", snap => {
+      .child('starred')
+      .on('child_added', snap => {
         const starredChannel = { id: snap.key, ...snap.val() }
         this.setState({
           starredChannels: [...this.state.starredChannels, starredChannel]
@@ -31,8 +39,8 @@ class Starred extends React.Component {
 
     this.state.usersRef
       .child(userId)
-      .child("starred")
-      .on("child_removed", snap => {
+      .child('starred')
+      .on('child_removed', snap => {
         const channelToRemove = { id: snap.key, ...snap.val() }
         const filteredChannels = this.state.starredChannels.filter(channel => {
           return channel.id !== channelToRemove.id
@@ -69,11 +77,11 @@ class Starred extends React.Component {
     const { starredChannels } = this.state
 
     return (
-      <Menu.Menu className="menu">
+      <Menu.Menu className='menu'>
         <Menu.Item>
           <span>
-            <Icon name="star" /> STARRED
-          </span>{" "}
+            <Icon name='star' /> STARRED
+          </span>{' '}
           ({starredChannels.length})
         </Menu.Item>
         {this.displayChannels(starredChannels)}

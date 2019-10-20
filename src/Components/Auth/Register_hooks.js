@@ -17,10 +17,13 @@ const Register = () => {
     userRef: firebase.database().ref('users')
   })
 
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [passwordConfirmation, setPasswordConfirmation] = useState('')
+  const [inputValues, setInputValues] = useState({
+    username: '',
+    email: '',
+    password: '',
+    passwordConfirmation: '',
+  })
+
   const [errors, setErrors] = useState([])
   const [loading, setLoading] = useState(false)
   const [userRef] = useState(firebase.database().ref('users'))

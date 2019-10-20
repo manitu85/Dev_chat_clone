@@ -3,14 +3,14 @@ import moment from 'moment'
 import { Comment, Image } from 'semantic-ui-react'
 
 const isOwnMessage = (message, user) => {
-  return message.user.id === user.uid ? 'message__self' : '';
+  return message.user.id === user.uid ? 'message__self' : ''
 };
 
 const isImage = message => {
   return message.hasOwnProperty('image') && !message.hasOwnProperty('content')
 };
 
-const timeFromNow = timestamp => moment(timestamp).fromNow();
+const timeFromNow = timestamp => moment(timestamp).fromNow()
 
 
 const Message = ({ message, user }) => (
@@ -28,4 +28,4 @@ const Message = ({ message, user }) => (
   </Comment>
 );
 
-export default Message;
+export default Message

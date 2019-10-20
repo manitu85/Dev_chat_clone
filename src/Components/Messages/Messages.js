@@ -26,18 +26,25 @@ class Messages extends Component {
     searchTerm: '',
     searchResults: [],
     searchLoading: false,
-    typingRef: firebase.database().ref("typing"),
+    typingRef: firebase.database().ref('typing'),
     typingUsers: [],
-    connectedRef: firebase.database().ref('.info/connected')
+    connectedRef: firebase.database().ref('.info/connected'),
+    listeners: []
   }
 
   componentDidMount() {
-    const { channel, user } = this.state
+    const { channel, user, listeners } = this.state
 
     if (channel && user) {
+      this.removeListeners(listeners)
       this.addListeners(channel.id)
       this.addUserStarsListener(channel.id, user.uid)
     }
+  }
+
+  componentWillUnmount() {
+    this.removeListeners(this.state.listeners)
+    this.state.connectedRef.off()
   }
 
 
@@ -47,13 +54,70 @@ class Messages extends Component {
     }
   }
 
-  scrollToBottom = () => {
-    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+  removeListeners = listeners => {
+    listeners.forEach(listener => {
+      listener.ref.child(listener.id).off(listener.event)
+    })
   }
 
   addListeners = channelId => {
     this.addMessageListener(channelId)
     this.addTypingListeners(channelId)
+  }
+
+  addToListeners = (id, ref, event) => {
+    const index = this.state.listeners.findIndex(listener => {
+      return (
+        listener.id === id && listener.ref === ref && listener.event === event
+      )
+    })
+
+    if (index === -1) {
+      const newListener = { id, ref, event }
+      this.setState({ listeners: this.state.listeners.concat(newListener) })
+    }
+  } 
+
+  scrollToBottom = () => {
+    this.messagesEnd.scrollIntoView({ behavior: 'smooth' })
+  }
+
+
+  addTypingListeners = channelId => {
+    let typingUsers = []
+    this.state.typingRef.child(channelId).on('child_added', snap => {
+      if (snap.key !== this.state.user.uid) {
+        typingUsers = typingUsers.concat({
+          id: snap.key,
+          name: snap.val()
+        })
+        this.setState({ typingUsers })
+      }
+    })
+    this.addToListeners(channelId, this.state.typingRef, 'child_added')
+
+    this.state.typingRef.child(channelId).on('child_removed', snap => {
+      const index = typingUsers.findIndex(user => user.id === snap.key)
+      if (index !== -1) {
+        typingUsers = typingUsers.filter(user => user.id !== snap.key)
+        this.setState({ typingUsers })
+      }
+    })
+    this.addToListeners(channelId, this.state.typingRef, 'child_removed')
+
+    this.state.connectedRef.on('value', snap => {
+      if (snap.val() === true) {
+        this.state.typingRef
+          .child(channelId)
+          .child(this.state.user.uid)
+          .onDisconnect()
+          .remove(err => {
+            if (err !== null) {
+              console.error(err)
+            }
+          })
+      }
+    })
   }
 
   handleStar = () => {
@@ -234,10 +298,10 @@ class Messages extends Component {
     users.length > 0 &&
     users.map(user => (
       <div
-        style={{ display: "flex", alignItems: "center", marginBottom: "0.2em" }}
+        style={{ display: 'flex', alignItems: 'center', marginBottom: '0.2em' }}
         key={user.id}
       >
-        <span className="user__typing">{user.name} is typing</span> <Typing />
+        <span className='user__typing'>{user.name} is typing</span> <Typing />
       </div>
     ))
 

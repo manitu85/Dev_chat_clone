@@ -9,14 +9,13 @@ import FileModal from './FileModal'
 import ProggresBar from './ProggresBar'
 
 export class MessageForm extends Component {
-
   state = {
     storageRef: firebase.storage().ref(),
-    typingRef: firebase.database().ref("typing"),
+    typingRef: firebase.database().ref('typing'),
     uploadTask: null,
-    uploadState: "",
+    uploadState: '',
     percentUploaded: 0,
-    message: "",
+    message: '',
     channel: this.props.currentChannel,
     user: this.props.currentUser,
     loading: false,
@@ -25,12 +24,19 @@ export class MessageForm extends Component {
     emojiPicker: false
   }
 
-  openModal = ()=> this.setState({ modal: true})
-  closeModal = ()=> this.setState({ modal: false})
+  componentWillUnmount() {
+    if (this.state.uploadTask !== null) {
+      this.state.uploadTask.cancel()
+      this.setState({ uploadTask: null })
+    }
+  }
+
+  openModal = () => this.setState({ modal: true })
+  closeModal = () => this.setState({ modal: false })
 
   handleOnChange = e => {
     const { name, value } = e.target
-    this.setState({ [name] : value })
+    this.setState({ [name]: value })
   }
 
   handleKeyDown = e => {
@@ -56,12 +62,14 @@ export class MessageForm extends Component {
   }
 
   createMessage = (fileUrl = null) => {
+    const { user } = this.state
+
     const message = {
       timestamp: firebase.database.ServerValue.TIMESTAMP,
       user: {
-        id: this.state.user.uid,
-        name: this.state.user.displayName,
-        avatar: this.state.user.photoURL
+        id: user.uid,
+        name: user.displayName,
+        avatar: user.photoURL
       }
     }
     if (fileUrl !== null) {
@@ -93,16 +101,16 @@ export class MessageForm extends Component {
             .child(user.uid)
             .remove()
         })
-        .catch( err => {
+        .catch(err => {
           console.error(err)
           this.setState({
             loading: false,
             errors: [...this.state.errors, err]
           })
-        }) 
+        })
     } else {
       this.setState({
-        errors: [...this.state.errors,{ message: 'Add a message'}]
+        errors: [...this.state.errors, { message: 'Add a message' }]
         // errors: this.state.errors.concat({ message: 'Add a message' }})
       })
     }
@@ -121,41 +129,47 @@ export class MessageForm extends Component {
     const ref = this.props.getMessagesRef()
     const filePath = `${this.getPath()}/${uuidv4()}.jpg`
 
-    this.setState({
-      uploadState: 'uploading',
-      uploadTask: this.state.storageRef.child(filePath).put(file, metadata)
-    },
+    this.setState(
+      {
+        uploadState: 'uploading',
+        uploadTask: this.state.storageRef.child(filePath).put(file, metadata)
+      },
       () => {
-       this.state.uploadTask.on('state_changed', snap => {
-         const percentUploaded = Math.round((snap.bytesTransferred / snap.totalBytes) * 100)
-         this.setState({ percentUploaded })
-       },
-        err => {
-          console.error(err)
-          this.setState({
-            errors: this.state.error.concat(err),
-            uploadState: 'error',
-            uploadTask: null
-          })
-        },
-         () => {
-           this.state.uploadTask.snapshot.ref
-             .getDownloadURL()
-             .then(downloadUrl => {
-               this.sendFileMessage(downloadUrl, ref, pathToUpload)
-             })
-             .catch(err => {
-               console.error(err)
-               this.setState({
-                 errors: this.state.errors.concat(err),
-                 uploadState: 'error',
-                 uploadTask: null
-               })
-             })
-         }
-       ) 
+        this.state.uploadTask.on(
+          'state_changed',
+          snap => {
+            const percentUploaded = Math.round(
+              (snap.bytesTransferred / snap.totalBytes) * 100
+            )
+            this.setState({ percentUploaded })
+          },
+          err => {
+            console.error(err)
+            this.setState({
+              errors: this.state.error.concat(err),
+              uploadState: 'error',
+              uploadTask: null
+            })
+          },
+          () => {
+            this.state.uploadTask.snapshot.ref
+              .getDownloadURL()
+              .then(downloadUrl => {
+                this.sendFileMessage(downloadUrl, ref, pathToUpload)
+              })
+              .catch(err => {
+                console.error(err)
+                this.setState({
+                  errors: this.state.errors.concat(err),
+                  uploadState: 'error',
+                  uploadTask: null
+                })
+              })
+          }
+        )
       }
-    )}
+    )
+  }
 
   sendFileMessage = (fileUrl, ref, pathToUpload) => {
     ref
@@ -198,11 +212,19 @@ export class MessageForm extends Component {
       return x
     })
   }
-  
+
   render() {
     // prettier ignore
-    const { errors, message, loading, modal, uploadState, percentUploaded, emojiPicker } = this.state
-   
+    const {
+      errors,
+      message,
+      loading,
+      modal,
+      uploadState,
+      percentUploaded,
+      emojiPicker
+    } = this.state
+
     return (
       <Segment className='message__form'>
         {emojiPicker && (
@@ -217,7 +239,7 @@ export class MessageForm extends Component {
         <Input
           fluid
           name='message'
-          style={{ marginBottom: '.7em'}}
+          style={{ marginBottom: '.7em' }}
           labelPosition='left'
           placeholder='Write your message'
           ref={node => (this.messageInputRef = node)}
@@ -229,14 +251,14 @@ export class MessageForm extends Component {
           }
           label={
             <Button
-              icon={emojiPicker ? "close" : "add"}
-              content={emojiPicker ? "Close" : null}
+              icon={emojiPicker ? 'close' : 'add'}
+              content={emojiPicker ? 'Close' : null}
               onClick={this.handleTogglePicker}
             />
           }
         />
         <Button.Group icon widths='2'>
-          <Button 
+          <Button
             onClick={this.sendMessage}
             disabled={loading}
             color='orange'
@@ -244,7 +266,7 @@ export class MessageForm extends Component {
             labelPosition='left'
             icon='edit'
           />
-          <Button 
+          <Button
             onClick={this.openModal}
             disabled={uploadState === 'uploading'}
             color='teal'
@@ -256,12 +278,12 @@ export class MessageForm extends Component {
             modal={modal}
             closeModal={this.closeModal}
             uploadFile={this.uploadFile}
-           />
-        </Button.Group>
-          <ProggresBar 
-            uploadState={uploadState}
-            percentUploaded={percentUploaded}
           />
+        </Button.Group>
+        <ProggresBar
+          uploadState={uploadState}
+          percentUploaded={percentUploaded}
+        />
       </Segment>
     )
   }
