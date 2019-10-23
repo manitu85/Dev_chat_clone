@@ -1,6 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
+src/Components/Auth/Register_hooks
 firebase_config.js
 /node_modules
 /.pnp

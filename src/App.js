@@ -5,7 +5,7 @@ import { Grid } from 'semantic-ui-react'
 import ColorPanel from './Components/ColorPanel/ColorPanel'
 import SidePanel from './Components/SidePanel/SidePanel'
 import Messages from './Components/Messages/Messages'
-import MetaPanel from './Components/MetaPanel/MetaPanel';
+import MetaPanel from './Components/MetaPanel/MetaPanel'
 
 // prettier-ignore
 const App = ({ currentUser, currentChannel, isPrivateChannel, userPosts, primaryColor, secondaryColor}) => {
